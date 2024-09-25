@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/range-slider-element@latest/dist/styles.css">
+    <style>
+        .card {
+            padding: 20px;
+        }
+
+        .form-select {
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+        }
+        .text-content {
+            color: #212529 !important;
+            font-weight: 700;
+        }
+        .result-box {
+            background-color: #fff;
+            border: 2px solid #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: left;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffc107;
+            display: inline-block;
+            margin-bottom: 0px;
+        }
+
+        .result-disabled {
+            font-size: 2rem;
+            font-weight: normal;
+            color: #ffc107;
+            opacity: 0.6;
+            margin-left: 5px;
+        }
+
+        .tab-button-group {
+            text-align: right;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 10px;
+            width: 100%;
+            max-width: 164px;
+            margin-left: auto;
+            border-radius: 7px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button-group .btn {
+            /* border-radius: 10px; */
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .tab-button-group .btn.active {
+            border: none;
+            background: #ffc107;
+        }
+
+        .result-summary-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        /* Custom slider styles */
+
+
+
+
+
+
+        range-slider:before {
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: linear-gradient(#ffc107, #ffc107) 0 / var(--value-percent, 0) 100% no-repeat #e0e0e0;
+        }
+
+        .thumb {
+            background: #ffc107;
+            width: 20px;
+            height: 20px;
+            bottom: calc(var(--element-height) / 2 - var(--thumb-size) / 1.5);
+        }
+
+        range-slider.touch-active .thumb-wrapper .thumb {
+            transform: scale(1)
+        }
+
+        range-slider:focus .thumb {
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <div class="card">
+            <!-- B2B and B2C Tabs -->
+            <div class="tab-button-group">
+                <button class="btn active" id="b2b-tab" type="button" onclick="switchTab('b2b')">B2B</button>
+                <button class="btn" id="b2c-tab" type="button" onclick="switchTab('b2c')">B2C</button>
+            </div>
+
+            <div class="row">
+                <!-- Left Side: Sliders and Inputs -->
+                <div class="col-md-8" id="b2b-inputs">
+                    <div class="row">
+                        <!-- Industry Dropdown -->
+                        <div class="col-md-6 mb-3">
+                            <label for="industry" class="form-label slider-label">Your Industry</label>
+                            <select class="form-select" id="industry">
+                                <option selected>Select Industry</option>
+                                <option value="1">Technology</option>
+                                <option value="2">Healthcare</option>
+                                <option value="3">Finance</option>
+                            </select>
+                        </div>
+
+                        <!-- Average Deal Size -->
+                        <div class="col-md-6 mb-3">
+                            <label for="deal-size" class="form-label slider-label">Average Deal Size ($)</label>
+                            <!-- <input type="range" class="form-range" id="deal-size" min="100" max="10000" step="100"
+                                value="1000"
+                                oninput="document.getElementById('deal-size-output').textContent = this.value;"> -->
+                            <range-slider class="form-range" id="deal-size" min="100" max="10000" step="100"
+                                dir="ltr"></range-slider>
+                            <!-- <span id="deal-size-output">1000</span> -->
+                        </div>
+
+                        <!-- Number of B2B Prospects -->
+                        <div class="col-md-6 mb-3">
+                            <label for="prospects" class="form-label slider-label">Number of B2B Prospects</label>
+                            <!-- <input type="range" class="form-range" id="prospects" min="10" max="1000" step="10"
+                                value="100"
+                                oninput="document.getElementById('prospects-output').textContent = this.value;">
+                            <span id="prospects-output">100</span> -->
+
+                            <range-slider class="form-range" id="prospects" min="10" max="1000" step="10"
+                                dir="ltr"></range-slider>
+                        </div>
+
+                        <!-- Close Ratio -->
+                        <div class="col-md-6 mb-3">
+                            <label for="close-ratio" class="form-label slider-label">Close Ratio (%)</label>
+                            <!-- <input type="range" class="form-range" id="close-ratio" min="1" max="100" value="10"
+                                oninput="document.getElementById('close-ratio-output').textContent = this.value;">
+                            <span id="close-ratio-output">10%</span> -->
+                            <range-slider class="form-range" id="close-ratio" min="1" max="100" step="10"
+                            dir="ltr"></range-slider>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B2C Inputs -->
+                <div class="col-md-8 d-none" id="b2c-inputs">
+                    <div class="row">
+                        <!-- Average B2C Customer Value -->
+                        <div class="col-md-6 mb-3">
+                            <label for="b2c-customer-value" class="form-label slider-label">Average Customer Value
+                                ($)</label>
+                            <!-- <input type="range" class="form-range" id="b2c-customer-value" min="100" max="10000"
+                                step="100" value="500"
+                                oninput="document.getElementById('b2c-customer-value-output').textContent = this.value;">
+                            <span id="b2c-customer-value-output">500</span> -->
+                            <range-slider class="form-range" id="b2c-customer-value" min="100" max="10000"
+                            step="100" dir="ltr"></range-slider>
+                        </div>
+
+                        <!-- Number of B2C Customers -->
+                        <div class="col-md-6 mb-3">
+                            <label for="b2c-customers" class="form-label slider-label">Number of B2C Customers</label>
+                            <!-- <input type="range" class="form-range" id="b2c-customers" min="10" max="1000" step="10"
+                                value="50"
+                                oninput="document.getElementById('b2c-customers-output').textContent = this.value;">
+                            <span id="b2c-customers-output">50</span> -->
+                            <range-slider class="form-range" id="b2c-customers" min="10" max="1000" step="10" dir="ltr"></range-slider>
+                        </div>
+
+                        <!-- B2C Close Ratio -->
+                        <div class="col-md-6 mb-3">
+                            <label for="b2c-close-ratio" class="form-label slider-label">B2C Close Ratio (%)</label>
+                            <!-- <input type="range" class="form-range" id="b2c-close-ratio" min="1" max="100" value="15"
+                                oninput="document.getElementById('b2c-close-ratio-output').textContent = this.value;">
+                            <span id="b2c-close-ratio-output">15%</span> -->
+                            <range-slider class="form-range" id="b2c-close-ratio" min="1" max="100" dir="ltr"></range-slider>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Results -->
+                <div class="col-md-4">
+                    <!-- Lead generation summary text -->
+                    <p class="result-summary-text text-content">Lead generation that sees your business through</p>
+
+                    <!-- Main result box -->
+                    <div class="result-box mb-4 py-4 text-center">
+                        <p class="result-value" id="estimated-revenue">$324,000<span class="result-disabled">/
+                                Year</span></p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Approx. number of deals box -->
+                        <div class="col-md-6">
+                            <div class="result-box mb-3">
+                                <p class="result-value" id="deals-number">9</p>
+                                <p class="result-summary-text">Approx. number of deals</p>
+                            </div>
+                        </div>
+
+                        <!-- Return on marketing box -->
+                        <div class="col-md-6">
+                            <div class="result-box mb-3">
+                                <p class="result-value" id="roi-percent">959%</p>
+                                <p class="result-summary-text">Return on marketing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/range-slider-element@latest"></script>
+    <script>
+        // Calculation logic
+        function calculateResults() {
+            const dealSize = parseInt(document.getElementById('deal-size').value);
+            const prospects = parseInt(document.getElementById('prospects').value);
+            const closeRatio = parseInt(document.getElementById('close-ratio').value);
+            console.log("prospects", prospects);
+            // Calculate B2B results
+            const b2bDeals = Math.floor((prospects * closeRatio) / 100);
+            const b2bRevenue = b2bDeals * dealSize;
+            const b2bRoi = Math.floor((b2bRevenue / 100000) * 100);
+
+            // Update B2B display
+            document.getElementById('estimated-revenue').innerHTML = `$${b2bRevenue.toLocaleString()}<span class="result-disabled">/ Year</span>`;
+            document.getElementById('deals-number').textContent = b2bDeals;
+            document.getElementById('roi-percent').textContent = `${b2bRoi}%`;
+
+            // Calculate B2C results if B2C inputs are visible
+            if (document.getElementById('b2c-inputs').classList.contains('d-none')) {
+                return; // Don't calculate B2C if hidden
+            }
+
+            const b2cCustomerValue = parseInt(document.getElementById('b2c-customer-value').value);
+            const b2cCustomers = parseInt(document.getElementById('b2c-customers').value);
+            const b2cCloseRatio = parseInt(document.getElementById('b2c-close-ratio').value);
+
+            // Calculate B2C results
+            const b2cDeals = Math.floor((b2cCustomers * b2cCloseRatio) / 100);
+            const b2cRevenue = b2cDeals * b2cCustomerValue;
+            const b2cRoi = Math.floor((b2cRevenue / 100000) * 100);
+
+            // Update B2C display
+            document.getElementById('estimated-revenue').innerHTML = `$${b2cRevenue.toLocaleString()}<span class="result-disabled">/ Year</span>`;
+            document.getElementById('deals-number').textContent = b2cDeals;
+            document.getElementById('roi-percent').textContent = `${b2cRoi}%`;
+        }
+
+        // Tab switching logic
+        function switchTab(tab) {
+            if (tab === 'b2b') {
+                document.getElementById('b2b-inputs').classList.remove('d-none');
+                document.getElementById('b2c-inputs').classList.add('d-none');
+                document.getElementById('b2b-tab').classList.add('active');
+                document.getElementById('b2c-tab').classList.remove('active');
+                calculateResults();
+            } else if (tab === 'b2c') {
+                document.getElementById('b2c-inputs').classList.remove('d-none');
+                document.getElementById('b2b-inputs').classList.add('d-none');
+                document.getElementById('b2c-tab').classList.add('active');
+                document.getElementById('b2b-tab').classList.remove('active');
+                calculateResults();
+            }
+        }
+
+        // Event listeners for inputs to calculate on input change
+        document.querySelectorAll('.form-range').forEach(function (input) {
+            input.addEventListener('input', calculateResults);
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        const elements = document.querySelectorAll(['range-slider']);
+elements.forEach(element => {
+  element.insertAdjacentHTML('afterend', `
+    <output>${element.value}</output>
+  `);
+});
+document.addEventListener('input', e => {
+  const input = e.target;
+  const output = input.nextElementSibling;
+  if (output) {
+    output.textContent = input.value;
+  }
+});
+    </script>
+
+</body>
+
+</html>
